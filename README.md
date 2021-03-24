@@ -15,6 +15,6 @@ repositories {
 
 ```gradle
 dependencies {
-    compileOnly 'com.github.einfachBlu:netty-protocol:master-SNAPSHOT'
+    implementation 'com.github.einfachBlu:netty-protocol:master-SNAPSHOT'
 }
 ```
