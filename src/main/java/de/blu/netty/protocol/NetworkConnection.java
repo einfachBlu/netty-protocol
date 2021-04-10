@@ -7,6 +7,7 @@ import de.blu.netty.protocol.packet.Packet;
 import de.blu.netty.protocol.pipeline.PacketDecoder;
 import de.blu.netty.protocol.pipeline.PacketEncoder;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import lombok.Getter;
 import org.reflections.Reflections;
@@ -28,10 +29,18 @@ public abstract class NetworkConnection {
   protected ConnectionHandler preparePipeline(SocketChannel socketChannel) {
     ConnectionHandler connectionHandler = new ConnectionHandler(this);
 
-    socketChannel.pipeline().addLast(new LengthFieldPrepender(8, true));
-    socketChannel.pipeline().addLast(new PacketDecoder());
-    socketChannel.pipeline().addLast(new PacketEncoder());
-    socketChannel.pipeline().addLast(connectionHandler);
+    // Decoding
+    socketChannel
+        .pipeline()
+        .addLast("frameDecoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4));
+    socketChannel.pipeline().addLast("decoder", new PacketDecoder());
+
+    // Encoding
+    socketChannel.pipeline().addLast("framePrepender", new LengthFieldPrepender(4));
+    socketChannel.pipeline().addLast("encoder", new PacketEncoder());
+
+    // Custom Handler
+    socketChannel.pipeline().addLast("connectionHandler", connectionHandler);
 
     return connectionHandler;
   }
@@ -49,7 +58,7 @@ public abstract class NetworkConnection {
     try {
       Reflections reflections = new Reflections(packageName, new SubTypesScanner(false));
       for (Class<? extends PacketListener> packetListenerClass :
-              reflections.getSubTypesOf(PacketListener.class)) {
+          reflections.getSubTypesOf(PacketListener.class)) {
         PacketListener packetListener = packetListenerClass.newInstance();
         this.registerPacketListener(packetListener.getPacketClass(), packetListener);
       }
