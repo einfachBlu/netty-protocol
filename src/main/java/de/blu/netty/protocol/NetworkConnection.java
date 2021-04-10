@@ -28,7 +28,7 @@ public abstract class NetworkConnection {
   protected ConnectionHandler preparePipeline(SocketChannel socketChannel) {
     ConnectionHandler connectionHandler = new ConnectionHandler(this);
 
-    socketChannel.pipeline().addLast(new LengthFieldPrepender(4, true));
+    socketChannel.pipeline().addLast(new LengthFieldPrepender(8, true));
     socketChannel.pipeline().addLast(new PacketDecoder());
     socketChannel.pipeline().addLast(new PacketEncoder());
     socketChannel.pipeline().addLast(connectionHandler);

@@ -11,8 +11,12 @@ public final class PacketEncoder extends MessageToByteEncoder<Packet> {
   @Override
   protected void encode(
       ChannelHandlerContext channelHandlerContext, Packet packet, ByteBuf byteBuf) {
-    ByteBufUtils.writeString(byteBuf, packet.getClass().getName());
-    ByteBufUtils.writeUUID(byteBuf, packet.getUniqueId());
-    packet.write(byteBuf);
+    try {
+      ByteBufUtils.writeString(byteBuf, packet.getClass().getName());
+      ByteBufUtils.writeUUID(byteBuf, packet.getUniqueId());
+      packet.write(byteBuf);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
