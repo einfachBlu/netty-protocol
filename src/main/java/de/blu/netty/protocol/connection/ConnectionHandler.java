@@ -59,8 +59,9 @@ public final class ConnectionHandler extends SimpleChannelInboundHandler<Packet>
 
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-    // super.exceptionCaught(ctx, cause);
-    ctx.close();
+    cause.printStackTrace();
+    //super.exceptionCaught(ctx, cause);
+    //ctx.close();
   }
 
   @Override
