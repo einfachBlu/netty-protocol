@@ -4,6 +4,7 @@ import de.blu.common.packet.MessagePacket;
 import de.blu.netty.protocol.ServerConnection;
 import de.blu.netty.protocol.connection.ConnectionHandler;
 import de.blu.netty.protocol.listener.ConnectionListener;
+import de.blu.netty.protocol.packet.PacketRegistry;
 
 public final class ServerTest implements ConnectionListener {
   public static void main(String[] args) {
@@ -13,6 +14,8 @@ public final class ServerTest implements ConnectionListener {
   private ServerConnection serverConnection;
 
   public ServerTest() {
+    PacketRegistry.getPacketClasses().add(MessagePacket.class);
+
     // Start Server
     this.serverConnection = new ServerConnection();
     serverConnection.registerPacketListeners("de.blu.common.listener");

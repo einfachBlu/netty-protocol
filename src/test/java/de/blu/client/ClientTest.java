@@ -1,8 +1,10 @@
 package de.blu.client;
 
+import de.blu.common.packet.MessagePacket;
 import de.blu.netty.protocol.ClientConnection;
 import de.blu.netty.protocol.connection.ConnectionHandler;
 import de.blu.netty.protocol.listener.ConnectionListener;
+import de.blu.netty.protocol.packet.PacketRegistry;
 import de.blu.netty.protocol.packet.SetNamePacket;
 import de.blu.netty.protocol.response.ClientConnectResponse;
 
@@ -14,6 +16,8 @@ public final class ClientTest implements ConnectionListener {
   private ClientConnection clientConnection;
 
   public ClientTest() {
+    PacketRegistry.getPacketClasses().add(MessagePacket.class);
+
     // Start Server
     this.clientConnection = new ClientConnection();
     clientConnection.registerPacketListeners("de.blu.common.listener");

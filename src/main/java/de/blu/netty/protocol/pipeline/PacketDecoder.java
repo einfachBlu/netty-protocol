@@ -1,6 +1,7 @@
 package de.blu.netty.protocol.pipeline;
 
 import de.blu.netty.protocol.packet.Packet;
+import de.blu.netty.protocol.packet.PacketRegistry;
 import de.blu.netty.protocol.util.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.EmptyByteBuf;
@@ -17,19 +18,13 @@ public final class PacketDecoder extends ByteToMessageDecoder {
       return;
     }
 
+    // The packets size
+    byteBuf.readInt();
+
     try {
-      String packetClassName = ByteBufUtils.readString(byteBuf);
-      if (packetClassName == null) {
-        return;
-      }
-
-      Class<?> packetClass = Class.forName(packetClassName);
-      Object object = packetClass.newInstance();
-      if (!(object instanceof Packet)) {
-        return;
-      }
-
-      Packet packet = (Packet) object;
+      int packetId = byteBuf.readInt();
+      Class<? extends Packet> packetClass = PacketRegistry.getPacketClasses().get(packetId);
+      Packet packet = packetClass.newInstance();
       packet.setUniqueId(ByteBufUtils.readUUID(byteBuf));
       packet.read(byteBuf);
       list.add(packet);
